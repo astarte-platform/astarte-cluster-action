@@ -1,0 +1,105 @@
+name: "Astarte Local Cluster"
+description: "Brings up a fully functional local Astarte Cluster and its tooling for CI purposes."
+
+branding:
+  color: blue
+  icon: share-2
+
+inputs:
+  astarte_namespace:
+    description: "The Kubernetes namespace where Astarte will be installed. Defaults to `astarte`"
+    required: false
+    default: "astarte"
+  astarte_chart_version:
+    description: "The Astarte Helm Chart version to use. Defaults to ^1.0.0"
+    required: false
+    default: "^1.0.0"
+  astarte_version:
+    description: "The Astarte version to install. This will match both the Operator and Astarte version. Defaults to 1.0.1"
+    required: false
+    default: "1.0.1"
+  astarte_realm:
+    description: "The Astarte realm to create. Defaults to `test`. If empty, no realm will be created and the realm_key output will be empty."
+    required: false
+    default: "test"
+  kind_version:
+    description: "KinD version to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
+    required: false
+    default: "v0.11.1"
+  kind_node_image:
+    description: "KinD node to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
+    required: false
+    default: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
+
+outputs:
+  housekeeping_key:
+    description: "The Housekeeping private key of the new cluster"
+    value: ${{ steps.load-housekeeping-key.outputs.housekeeping-key }}
+  realm_key:
+    description: "The Realm private key of the newly created Realm."
+    value: ${{ steps.load-realm-key.outputs.realm-key }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.7.2
+    - name: Set nf_conntrack_max value
+      shell: bash
+      # This step is required to avoid CrashLoopBackOff for kube-proxy
+      # see https://github.com/kubernetes-sigs/kind/issues/2240#issuecomment-838510890
+      run: |
+        sudo sysctl net/netfilter/nf_conntrack_max=131072
+    - name: Setup custom host for Astarte autotest API
+      shell: bash
+      run: echo "127.0.0.1 api.autotest.astarte-platform.org" | sudo tee -a /etc/hosts
+    - name: Setup custom host for Astarte autotest Broker
+      shell: bash
+      run: echo "127.0.0.1 broker.autotest.astarte-platform.org" | sudo tee -a /etc/hosts
+    - uses: container-tools/kind-action@v1
+      with:
+        version: ${{ inputs.kind_version }}
+        node_image: ${{ inputs.kind_node_image }}
+        config: "${{ github.action_path }}/kind-config.yml"
+    - name: Ensure KinD is up
+      shell: bash
+      run: |
+        kubectl cluster-info
+        kubectl get pods -n kube-system
+    - name: Install Operator and its dependencies
+      shell: bash
+      run: ${{ github.action_path }}/install-operator.sh "${{ inputs.astarte_chart_version }}" "${{ inputs.astarte_version }}"
+    - name: Setup Astarte Kubernetes namespace
+      shell: bash
+      run: kubectl create namespace "${{ inputs.astarte_namespace }}"
+    - name: Setup SSL Certificates
+      shell: bash
+      run: ${{ github.action_path }}/setup-ssl.sh "${{ github.action_path }}/ca.json" "${{ github.action_path }}/cert.json" "${{ inputs.astarte_namespace }}"
+    - name: Setup Astarte
+      shell: bash
+      run: ${{ github.action_path }}/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/adi.yml" "${{ github.action_path }}/broker-service.yml"
+    - name: Create Astarte Realm
+      shell: bash
+      run: astartectl housekeeping realms create -y "${{ inputs.astarte_realm }}"
+    - id: load-housekeeping-key
+      shell: bash
+      run: echo "::set-output name=housekeeping-key::$(astartectl config cluster get-housekeeping-key $(astartectl config current-cluster))"
+    - id: load-realm-key
+      shell: bash
+      run: echo "::set-output name=realm-key::$(astartectl config contexts get-realm-key $(astartectl config current-context))"
+    - name: Wait for the realm creation to propagate
+      shell: bash
+      run: |
+        for i in {1..6}; do
+            if [[ -n $(astartectl housekeeping realms show "${{ inputs.astarte_realm }}") ]]; then
+                echo "Astarte Realm created successfully"
+                exit 0
+            else
+                sleep 5
+            fi
+        done
+
+        echo "Astarte Realm creation timed out"
+        exit 1

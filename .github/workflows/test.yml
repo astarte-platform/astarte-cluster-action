@@ -1,0 +1,20 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Create Astarte cluster
+        uses: ./
+      - name: Test cluster functionality (register a device)
+        run: |
+          astartectl config current-context
+          astartectl config contexts show $(astartectl config current-context)
+          export DEVICE_ID=$(astartectl utils device-id generate-random)
+          astartectl pairing agent register $DEVICE_ID

@@ -1,0 +1,14 @@
+apiVersion: ingress.astarte-platform.org/v1alpha1
+kind: AstarteDefaultIngress
+metadata:
+  name: adi
+spec:
+  ### Astarte Default Ingress CRD
+  astarte: astarte
+  tlsSecret: test-certificate
+  api:
+    exposeHousekeeping: true
+  dashboard:
+    deploy: false
+  broker:
+    deploy: false

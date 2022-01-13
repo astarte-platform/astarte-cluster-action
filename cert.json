@@ -1,0 +1,21 @@
+{
+    "CN": "api.autotest.astarte-platform.org",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "IT",
+            "L": "Arezzo",
+            "O": "Astarte",
+            "OU": "Astarte Autotest Hosts",
+            "ST": "Italy"
+        }
+    ],
+    "hosts": [
+        "api.autotest.astarte-platform.org",
+        "broker.autotest.astarte-platform.org",
+        "localhost"
+    ]
+}
