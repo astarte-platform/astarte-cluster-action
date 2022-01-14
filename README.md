@@ -66,4 +66,4 @@ jobs:
         uses: astarte-platform/astarte-cluster-action@v1
 ```
 
-This uses [@astarte-platform/astarte-action](https://github.com/astarte-platform/astarte-action) GitHub Action to spin up an [Astarte](https://github.com/astarte-platform/astarte) Kubernetes cluster on every Pull Request.
+This uses [@astarte-platform/astarte-cluster-action](https://github.com/astarte-platform/astarte-cluster-action) GitHub Action to spin up an [Astarte](https://github.com/astarte-platform/astarte) Kubernetes cluster on every Pull Request.
