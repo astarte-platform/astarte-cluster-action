@@ -16,8 +16,10 @@ astartectl cluster instances deploy --version "$1" --api-host "api.autotest.asta
     --broker-port 8883 --broker-tls-secret test-certificate --vernemq-volume-size "4G" --rabbitmq-volume-size "4G" \
     --cassandra-volume-size "4G" --name "astarte" --namespace "$2" --profile "burst" -y || exit 1
 
-# Wait for it to be ready (cluster status must be green), up to 10 minutes
-for i in {1..120}; do
+echo "Waiting for Astarte Cluster to be ready..."
+
+# Wait for it to be ready (cluster status must be green), up to 15 minutes
+for i in {1..180}; do
     if [[ $(kubectl get astarte -n $2 astarte -o json | jq .status.health -r) = "green" ]]; then
         echo "Astarte cluster reported green status"
         break

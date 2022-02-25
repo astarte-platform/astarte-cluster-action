@@ -58,7 +58,7 @@ runs:
     - name: Setup custom host for Astarte autotest Broker
       shell: bash
       run: echo "127.0.0.1 broker.autotest.astarte-platform.org" | sudo tee -a /etc/hosts
-    - uses: container-tools/kind-action@v1
+    - uses: helm/kind-action@v1.2.0
       with:
         version: ${{ inputs.kind_version }}
         node_image: ${{ inputs.kind_node_image }}
