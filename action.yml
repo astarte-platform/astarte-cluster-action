@@ -15,9 +15,9 @@ inputs:
     required: false
     default: "^1.0.0"
   astarte_version:
-    description: "The Astarte version to install. This will match both the Operator and Astarte version. Defaults to 1.0.1"
+    description: "The Astarte version to install. This will match both the Operator and Astarte version. Defaults to 1.0.3"
     required: false
-    default: "1.0.1"
+    default: "1.0.3"
   astarte_realm:
     description: "The Astarte realm to create. Defaults to `test`. If empty, no realm will be created and the realm_key output will be empty."
     required: false
