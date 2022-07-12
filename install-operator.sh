@@ -10,7 +10,7 @@ helm repo update
 
 # Install cert-manager
 kubectl create namespace cert-manager
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.1.0 --set installCRDs=true || exit 1
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.10.0 --set installCRDs=true || exit 1
 
 # Wait for everything to settle
 kubectl wait --namespace ingress-nginx \
@@ -19,7 +19,7 @@ kubectl wait --namespace ingress-nginx \
   --timeout=90s || exit 1
 
 # Install Astarte operator
-helm install astarte-operator astarte/astarte-operator --version "$1" --set image.tag="$2" || exit 1
+helm install astarte-operator astarte/astarte-operator --version "$1" || exit 1
 
 # Wait 10s for it to settle
 sleep 10

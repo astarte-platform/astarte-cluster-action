@@ -2,8 +2,8 @@
 
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cd $tmp_dir
-wget -q https://github.com/astarte-platform/astartectl/releases/download/v1.0.0-beta.7/astartectl_1.0.0-beta.7_linux_x86_64.tar.gz
-tar xf astartectl_1.0.0-beta.7_linux_x86_64.tar.gz
+wget -q https://github.com/astarte-platform/astartectl/releases/download/v22.11.00/astartectl_22.11.00_linux_x86_64.tar.gz
+tar xf astartectl_22.11.00_linux_x86_64.tar.gz
 chmod +x astartectl
 cd -
 
@@ -14,7 +14,7 @@ echo "$tmp_dir" >> $GITHUB_PATH
 # Deploy a burst instance
 astartectl cluster instances deploy --version "$1" --api-host "api.autotest.astarte-platform.org" --broker-host "broker.autotest.astarte-platform.org" \
     --broker-port 8883 --broker-tls-secret test-certificate --vernemq-volume-size "4G" --rabbitmq-volume-size "4G" \
-    --cassandra-volume-size "4G" --name "astarte" --namespace "$2" --profile "burst" -y || exit 1
+    --cassandra-volume-size "4G" --name "astarte" --namespace "$2" --burst -y || exit 1
 
 echo "Waiting for Astarte Cluster to be ready..."
 

@@ -17,4 +17,4 @@ jobs:
           astartectl config current-context
           astartectl config contexts show $(astartectl config current-context)
           export DEVICE_ID=$(astartectl utils device-id generate-random)
-          astartectl pairing agent register $DEVICE_ID
+          astartectl pairing agent register -- $DEVICE_ID
