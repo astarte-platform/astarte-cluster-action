@@ -11,13 +11,13 @@ inputs:
     required: false
     default: "astarte"
   astarte_chart_version:
-    description: "The Astarte Helm Chart version to use. Defaults to ^1.0.0"
+    description: "The Astarte Helm Chart version to use. Defaults to ^22.11.00"
     required: false
-    default: "^1.0.0"
+    default: "^22.11.00"
   astarte_version:
-    description: "The Astarte version to install. This will match both the Operator and Astarte version. Defaults to 1.0.1"
+    description: "The Astarte version to install. This will match both the Operator and Astarte version. Defaults to 1.0.4"
     required: false
-    default: "1.0.1"
+    default: "1.0.4"
   astarte_realm:
     description: "The Astarte realm to create. Defaults to `test`. If empty, no realm will be created and the realm_key output will be empty."
     required: false
@@ -70,7 +70,7 @@ runs:
         kubectl get pods -n kube-system
     - name: Install Operator and its dependencies
       shell: bash
-      run: ${{ github.action_path }}/install-operator.sh "${{ inputs.astarte_chart_version }}" "${{ inputs.astarte_version }}"
+      run: ${{ github.action_path }}/install-operator.sh "${{ inputs.astarte_chart_version }}"
     - name: Setup Astarte Kubernetes namespace
       shell: bash
       run: kubectl create namespace "${{ inputs.astarte_namespace }}"
