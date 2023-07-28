@@ -11,13 +11,13 @@ inputs:
     required: false
     default: "astarte"
   astarte_chart_version:
-    description: "The Astarte Helm Chart version to use. Defaults to ^22.11.00"
+    description: "The Astarte Operator Helm Chart version to use. Defaults to ^22.11.00"
     required: false
-    default: "^22.11.00"
+    default: "^22.11.01"
   astarte_version:
     description: "The Astarte version to install. This will match both the Operator and Astarte version. Defaults to 1.0.4"
     required: false
-    default: "1.0.4"
+    default: "1.1.0"
   astarte_realm:
     description: "The Astarte realm to create. Defaults to `test`. If empty, no realm will be created and the realm_key output will be empty."
     required: false
