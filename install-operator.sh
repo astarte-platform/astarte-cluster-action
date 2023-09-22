@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install NGINX (inside KinD)
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/kind/deploy.yaml
 
 # Manage Helm repositories
 helm repo add jetstack https://charts.jetstack.io

@@ -25,11 +25,11 @@ inputs:
   kind_version:
     description: "KinD version to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
     required: false
-    default: "v0.11.1"
+    default: "v0.17.0"
   kind_node_image:
     description: "KinD node to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
     required: false
-    default: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
+    default: "kindest/node:v1.24.7@sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315"
 
 outputs:
   housekeeping_key:
