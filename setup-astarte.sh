@@ -12,9 +12,9 @@ export PATH=$tmp_dir:$PATH
 echo "$tmp_dir" >> $GITHUB_PATH
 
 # Deploy a burst instance
-astartectl cluster instances deploy --version "$1" --api-host "api.autotest.astarte-platform.org" --broker-host "broker.autotest.astarte-platform.org" \
-    --broker-port 8883 --broker-tls-secret test-certificate --vernemq-volume-size "4G" --rabbitmq-volume-size "4G" \
-    --cassandra-volume-size "4G" --name "astarte" --namespace "$2" --burst -y || exit 1
+echo "Deploying Astarte"
+export ASTARTE_VERSION=$1
+cat $5 | envsubst | kubectl apply -n $2 -f - || exit 1
 
 echo "Waiting for Astarte Cluster to be ready..."
 
