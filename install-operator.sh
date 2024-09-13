@@ -10,7 +10,7 @@ helm repo update
 
 # Install cert-manager
 kubectl create namespace cert-manager
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.10.0 --set installCRDs=true || exit 1
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.14.5 --set installCRDs=true || exit 1
 
 # Wait for everything to settle
 kubectl wait --namespace ingress-nginx \

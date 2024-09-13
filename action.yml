@@ -11,13 +11,13 @@ inputs:
     required: false
     default: "astarte"
   astarte_chart_version:
-    description: "The Astarte Operator Helm Chart version to use. Defaults to ^23.5.1"
+    description: "The Astarte Operator Helm Chart version to use. Defaults to ^24.5.0"
     required: false
-    default: "^23.5.1"
+    default: "^24.5.0"
   astarte_version:
-    description: "The Astarte version to install. Defaults to 1.1.1"
+    description: "The Astarte version to install. Defaults to 1.2.0"
     required: false
-    default: "1.1.1"
+    default: "1.2.0"
   astarte_realm:
     description: "The Astarte realm to create. Defaults to `test`. If empty, no realm will be created and the realm_key output will be empty."
     required: false
@@ -25,11 +25,12 @@ inputs:
   kind_version:
     description: "KinD version to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
     required: false
-    default: "v0.22.0"
+    default: "v0.23.0"
   kind_node_image:
     description: "KinD node to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
     required: false
-    default: "kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245"
+    default: "kindest/node:v1.30.0@sha256:047357ac0cfea04663786a612ba1eaba9702bef25227a794b52890dd8bcd692e"
+
 
 outputs:
   housekeeping_key:
@@ -77,21 +78,27 @@ runs:
       run: ${{ github.action_path }}/setup-ssl.sh "${{ github.action_path }}/ca.json" "${{ github.action_path }}/cert.json" "${{ inputs.astarte_namespace }}"
     - name: Setup Astarte
       shell: bash
-      run: ${{ github.action_path }}/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/adi.yml" "${{ github.action_path }}/broker-service.yml"
-    - name: Create Astarte Realm
+      run: ${{ github.action_path }}/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/adi.yml" "${{ github.action_path }}/broker-service.yml" "${{ github.action_path }}/astarte.yaml"
+    - name: Create Realm Keys
       shell: bash
-      run: astartectl housekeeping realms create -y "${{ inputs.astarte_realm }}"
+      run: cd "${{ github.action_path }}" && astartectl utils gen-keypair "${{ inputs.astarte_realm }}" && cd -
+    - name: load-realm-key
+      shell: bash
+      run: echo "::set-output name=realm-key::$(cat ${{ github.action_path }}/${{ inputs.astarte_realm }}_private.pem)"
+    - name: Get housekeeping key
+      shell: bash
+      run: kubectl get secrets -n "${{ inputs.astarte_namespace }}" astarte-housekeeping-private-key -o jsonpath={.data.private-key} | base64 -d > "${{ github.action_path }}"/housekeeping_key.pem
     - id: load-housekeeping-key
       shell: bash
-      run: echo "::set-output name=housekeeping-key::$(astartectl config cluster get-housekeeping-key $(astartectl config current-cluster))"
-    - id: load-realm-key
+      run: echo "::set-output name=housekeeping-key::$(cat ${{ github.action_path }}/housekeeping_key.pem)"
+    - name: Create Astarte Realm
       shell: bash
-      run: echo "::set-output name=realm-key::$(astartectl config contexts get-realm-key $(astartectl config current-context))"
+      run: astartectl housekeeping realms create -y "${{ inputs.astarte_realm }}" -u http://api.autotest.astarte-platform.org --realm-public-key "${{ github.action_path }}/${{ inputs.astarte_realm }}"_public.pem -k "${{ github.action_path }}/housekeeping_key.pem"
     - name: Wait for the realm creation to propagate
       shell: bash
       run: |
         for i in {1..6}; do
-            if [[ -n $(astartectl housekeeping realms show "${{ inputs.astarte_realm }}") ]]; then
+            if [[ -n $(astartectl housekeeping realms show "${{ inputs.astarte_realm }}" -u http://api.autotest.astarte-platform.org -k "${{ github.action_path }}/housekeeping_key.pem") ]]; then
                 echo "Astarte Realm created successfully"
                 exit 0
             else
@@ -101,3 +108,18 @@ runs:
 
         echo "Astarte Realm creation timed out"
         exit 1
+    - name: create astartectl cluster and context
+      shell: bash
+      run: |
+        export CLUSTER_NAME=$(kubectl config current-context)
+        mkdir -p ~/.config/astarte
+        echo 'context: ""' >> ~/.config/astarte/astartectl.yaml
+        astartectl config clusters create $CLUSTER_NAME \
+          --api-url http://api.autotest.astarte-platform.org \
+          --housekeeping-key ${{ github.action_path }}/housekeeping_key.pem
+        export CONTEXT_NAME=$CLUSTER_NAME
+        astartectl config contexts create $CONTEXT_NAME \
+          --cluster $CLUSTER_NAME \
+          --realm-name ${{ inputs.astarte_realm }} \
+          --realm-private-key ${{ github.action_path }}/${{ inputs.astarte_realm }}_private.pem
+        astartectl config contexts update $CONTEXT_NAME --activate

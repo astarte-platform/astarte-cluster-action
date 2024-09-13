@@ -1,0 +1,65 @@
+apiVersion: api.astarte-platform.org/v1alpha3
+kind: Astarte
+metadata:
+  annotations:
+    astarte-platform.org/deployment-profile: burst
+  name: astarte
+spec:
+  api:
+    host: api.autotest.astarte-platform.org
+  cassandra:
+    deploy: true
+    heapNewSize: 256M
+    maxHeapSize: 512M
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2048M
+      requests:
+        cpu: 500m
+        memory: 1024M
+    storage:
+      size: 4G
+  cfssl:
+    deploy: true
+    resources:
+      limits:
+        cpu: 0m
+        memory: 128M
+      requests:
+        cpu: 0m
+        memory: 128M
+    storage:
+      size: 2Gi
+  components:
+    # Resources are not set. We're indeed using a burst profile
+    dataUpdaterPlant:
+      dataQueueCount: 128
+  rabbitmq:
+    deploy: true
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 512M
+      requests:
+        cpu: 200m
+        memory: 256M
+    storage:
+      size: 4G
+  vernemq:
+    deploy: true
+    host: broker.autotest.astarte-platform.org
+    port: 8883
+    resources:
+      limits:
+        cpu: 0m
+        memory: 256M
+      requests:
+        cpu: 0m
+        memory: 256M
+    sslListener: true
+    sslListenerCertSecretName: test-certificate
+    storage:
+      size: 4G
+  version: "$ASTARTE_VERSION"
+
