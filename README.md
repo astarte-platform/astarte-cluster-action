@@ -35,11 +35,12 @@ For more information, reference the GitHub Help Documentation for [Creating a wo
 
 ### Inputs
 
-- `astarte_chart_version`: The Helm chart version for Astarte Operator. Defaults to the last one in the 23.5.xx series.
-- `astarte_version`: The Astarte version to install. Defaults to `1.1.1`.
+- `astarte_chart_version`: The Helm chart version for Astarte Operator. Defaults to the last one in the 24.5.xx series.
+- `astartectl_version`: The astartectl CLI version to install. Defaults to the last one in the 24.5.xx series. Advised to leave as default.
+- `astarte_version`: The Astarte version to install. Defaults to the last one in the 1.2.xx series.
 - `astarte_realm`: The Astarte Realm that will be created with the cluster. Defaults to `test`.
 - `astarte_namespace`: The Kubernetes namespace where Astarte will be installed. Defaults to `astarte`.
-- `kind_version`: The kind version to use (default: `v0.22.0`). Advised to leave as default.
+- `kind_version`: The kind version to use (default: `v0.23.0`). Advised to leave as default.
 - `kind_node_image`: The Docker image for the cluster nodes. Advised to leave as default.
 
 ### Outputs

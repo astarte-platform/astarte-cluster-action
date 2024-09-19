@@ -2,8 +2,9 @@
 
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cd $tmp_dir
-wget -q https://github.com/astarte-platform/astartectl/releases/download/v24.5.2/astartectl_24.5.2_linux_x86_64.tar.gz
-tar xf astartectl_24.5.2_linux_x86_64.tar.gz
+ASTARTECTL_VERSION=$6
+wget -q https://github.com/astarte-platform/astartectl/releases/download/v${ASTARTECTL_VERSION}/astartectl_${ASTARTECTL_VERSION}_linux_x86_64.tar.gz
+tar xf astartectl_${ASTARTECTL_VERSION}_linux_x86_64.tar.gz
 chmod +x astartectl
 cd -
 

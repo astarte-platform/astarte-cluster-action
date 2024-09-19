@@ -14,8 +14,12 @@ inputs:
     description: "The Astarte Operator Helm Chart version to use. Defaults to ^24.5.0"
     required: false
     default: "^24.5.0"
+  astartectl_version:
+    description: "The astartectl CLI version to use. Defaults to ^24.5.1"
+    required: false
+    default: "24.5.2"
   astarte_version:
-    description: "The Astarte version to install. Defaults to 1.2.0"
+    description: "The Astarte version to install. Defaults to ^1.2.0"
     required: false
     default: "1.2.0"
   astarte_realm:
@@ -78,7 +82,7 @@ runs:
       run: ${{ github.action_path }}/setup-ssl.sh "${{ github.action_path }}/ca.json" "${{ github.action_path }}/cert.json" "${{ inputs.astarte_namespace }}"
     - name: Setup Astarte
       shell: bash
-      run: ${{ github.action_path }}/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/adi.yml" "${{ github.action_path }}/broker-service.yml" "${{ github.action_path }}/astarte.yaml"
+      run: ${{ github.action_path }}/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/adi.yml" "${{ github.action_path }}/broker-service.yml" "${{ github.action_path }}/astarte.yaml" "${{ inputs.astartectl_version }}"
     - name: Create Realm Keys
       shell: bash
       run: cd "${{ github.action_path }}" && astartectl utils gen-keypair "${{ inputs.astarte_realm }}" && cd -
