@@ -1,0 +1,39 @@
+apiVersion: api.astarte-platform.org/v2alpha1
+kind: Astarte
+metadata:
+  name: astarte
+spec:
+  api:
+    host: api.autotest.astarte-platform.org
+    ssl: true
+  cassandra:
+    astarteSystemKeyspace:
+      replicationFactor: 1
+      replicationStrategy: SimpleStrategy
+    connection:
+      nodes:
+        - host: "scylla-local-kind-1-local-kind-1a-0.scylla-operator.svc.cluster.local"
+          port: 9042
+      credentialsSecret:
+        name: scylladb-connection-secret
+        usernameKey: username
+        passwordKey: password
+  vernemq:
+    deploy: true
+    replicas: 1
+    host: broker.autotest.astarte-platform.org
+    port: 8883
+    sslListener: true
+    sslListenerCertSecretName: test-certificate
+  rabbitmq:
+    connection:
+      host: rabbitmq.rabbitmq-system.svc.cluster.local
+      port: 5672
+      credentialsSecret:
+        name: rabbitmq-connection-secret
+        usernameKey: username
+        passwordKey: password
+    managementConnection:
+      host: rabbitmq.rabbitmq-system.svc.cluster.local
+      port: 15672
+  version: "$ASTARTE_VERSION"
