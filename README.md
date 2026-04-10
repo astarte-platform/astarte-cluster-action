@@ -37,7 +37,7 @@ For more information, reference the GitHub Help Documentation for [Creating a wo
 
 ### Inputs
 
-- `astarte_chart_version`: The Helm chart version for Astarte Operator. Default: `26.5.0-dev`.
+- `astarte_chart_version`: The Helm chart version for Astarte Operator. Default: `26.5.0-alpha.0`.
 - `astartectl_version`: The astartectl CLI version to install. Default: `24.5.3`.
 - `astarte_version`: The Astarte version to install. Default: `1.3.0-rc.2`.
 - `astarte_realm`: The Astarte Realm that will be created with the cluster. Default: `test`. If empty, no realm is created.
@@ -106,4 +106,4 @@ This uses [@astarte-platform/astarte-cluster-action](https://github.com/astarte-
 |:------------------------------:|:-------------------:|:-----------------------------------:|
 | v1.2.0                         | v1.0 - v1.2.0       | v24.5                               |
 | v1.2.0                         | v1.2.1 - v1.2.x     | v24.5.2                             |
-| v1.3.0 (unreleased)            | v1.3+               | v26.5                               |
+| v2.0.0-alpha.0                 | v1.3+               | v26.5                               |
