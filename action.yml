@@ -27,9 +27,9 @@ inputs:
     required: false
     default: "v1.20.2"
   astarte_chart_version:
-    description: "The Astarte Operator Helm Chart version to use. Defaults to 26.5.0-dev"
+    description: "The Astarte Operator Helm Chart version to use. Defaults to 26.5.0-alpha.0"
     required: false
-    default: "26.5.0-dev"
+    default: "26.5.0-alpha.0"
   astartectl_version:
     description: "The astartectl CLI version to use. Defaults to 24.5.3"
     required: false
