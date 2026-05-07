@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.0.0] - 2026-05-07
+- Bump to latest stable versions for Astarte, Astarte Operator, astartectl.
+
 ## [2.0.0-alpha.0] - 2026-04-10
 
 BREAKING: Given the amount breaking changes introduces between Astarte 1.2.x and Astarte 1.3.x (and related Operator versions), the Astarte Cluster GitHub Action v2+ is only compatible with Astarte 1.3.x and Astarte Operator 26.5.x. It is advised to use Astarte Cluster GitHub Action v1.2 to use previous versions of Astarte.
