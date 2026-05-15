@@ -48,6 +48,7 @@ For more information, reference the GitHub Help Documentation for [Creating a wo
 - `haproxy_version`: The HAProxy Helm Chart version to use (default: `v1.49.0`).
 - `rabbitmq_cluster_operator_version`: The RabbitMQ Cluster Operator version to use (default: `v2.20.0`).
 - `scylla_operator_version`: The Scylla Operator version to use (default: `v1.20.2`).
+- `kustomize_astarte_patch`: Kustomize patch to the Astarte resource.
 
 ### Outputs
 

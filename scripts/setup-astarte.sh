@@ -11,17 +11,17 @@ ASTARTECTL_VERSION="$6"
 
 echo "Creating credential secrets for Scylla..."
 kubectl create secret generic scylladb-connection-secret \
-  --namespace "$NAMESPACE" \
-  --from-literal=username=cassandra \
-  --from-literal=password=cassandra
+    --namespace "$NAMESPACE" \
+    --from-literal=username=cassandra \
+    --from-literal=password=cassandra
 
 echo "Creating credential secrets for RabbitMQ..."
 RABBITMQ_PASSWORD="$(kubectl get secret rabbitmq-default-user -n rabbitmq-system -o jsonpath='{.data.password}' | base64 --decode)"
 RABBITMQ_USER="$(kubectl get secret rabbitmq-default-user -n rabbitmq-system -o jsonpath='{.data.username}' | base64 --decode)"
 kubectl create secret generic rabbitmq-connection-secret \
-  --namespace "$NAMESPACE" \
-  --from-literal=username="$RABBITMQ_USER" \
-  --from-literal=password="$RABBITMQ_PASSWORD" || exit 1
+    --namespace "$NAMESPACE" \
+    --from-literal=username="$RABBITMQ_USER" \
+    --from-literal=password="$RABBITMQ_PASSWORD" || exit 1
 
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cd $tmp_dir
@@ -33,17 +33,23 @@ cd -
 
 export PATH=$tmp_dir:$PATH
 # Make it available to the following steps
-echo "$tmp_dir" >> "$GITHUB_PATH"
+echo "$tmp_dir" >>"$GITHUB_PATH"
 
 # Deploy a burst instance
 echo "Deploying Astarte"
-envsubst < "$ASTARTE_MANIFEST" | kubectl apply -n "$NAMESPACE" -f - || exit 1
+
+# Set the custom resource
+envsubst <"$ASTARTE_MANIFEST/astarte.tmpl.yaml" >"$ASTARTE_MANIFEST/astarte.yaml"
+# Add the user patch
+echo "$KUSTOMIZE_ASTARTE_PATCH" >"$ASTARTE_MANIFEST/kustomize-astarte-patch.yaml"
+# Apply the final manifest
+kubectl kustomize "$ASTARTE_MANIFEST" | kubectl apply -n "$NAMESPACE" -f - || exit 1
 
 # Wait for the Astarte CR to be created
 kubectl wait \
-  --for=create astarte astarte \
-  --namespace "$NAMESPACE" \
-  --timeout=90s || exit 1
+    --for=create astarte astarte \
+    --namespace "$NAMESPACE" \
+    --timeout=90s || exit 1
 
 # Show CR
 echo "Astarte CR created:"
@@ -95,18 +101,17 @@ kubectl apply -n "$NAMESPACE" -f "$ADI_MANIFEST"
 
 echo "Waiting for ADI Ingress to be created by the Astarte Operator..."
 kubectl wait \
-  --for=create ingress adi-api-ingress \
-  --namespace "$NAMESPACE" \
-  --timeout=90s || exit 1
-
+    --for=create ingress adi-api-ingress \
+    --namespace "$NAMESPACE" \
+    --timeout=90s || exit 1
 
 # Add the NodePort for the broker
 kubectl apply -n "$NAMESPACE" -f "$BROKER_MANIFEST"
 
 echo "Waiting for Broker NodePort to be created..."
 kubectl wait \
-  --for=create service kind-broker-service \
-  --namespace "$NAMESPACE" \
-  --timeout=90s || exit 1
+    --for=create service kind-broker-service \
+    --namespace "$NAMESPACE" \
+    --timeout=90s || exit 1
 
 echo "Astarte Cluster is ready"

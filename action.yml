@@ -50,7 +50,10 @@ inputs:
     description: "KinD node to use. It is advised to leave the default unless you're trying to use a very specific Astarte version"
     required: false
     default: "kindest/node:v1.33.7@sha256:d26ef333bdb2cbe9862a0f7c3803ecc7b4303d8cea8e814b481b09949d353040"
-
+  kustomize_astarte_patch:
+    description: "Kustomize patch to the Astarte resource."
+    required: false
+    default: ""
 outputs:
   housekeeping_key:
     description: "The Housekeeping private key of the new cluster"
@@ -115,8 +118,10 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/scripts/setup-ssl.sh "${{ github.action_path }}/certs/ca.json" "${{ github.action_path }}/certs/cert.json" "${{ inputs.astarte_namespace }}"
     - name: Setup Astarte
+      env:
+        KUSTOMIZE_ASTARTE_PATCH: ${{ inputs.kustomize_astarte_patch }}
       shell: bash
-      run: ${{ github.action_path }}/scripts/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/manifests/adi.yml" "${{ github.action_path }}/manifests/broker-service.yml" "${{ github.action_path }}/manifests/astarte.yaml" "${{ inputs.astartectl_version }}"
+      run: ${{ github.action_path }}/scripts/setup-astarte.sh "${{ inputs.astarte_version }}" "${{ inputs.astarte_namespace }}" "${{ github.action_path }}/manifests/adi.yml" "${{ github.action_path }}/manifests/broker-service.yml" "${{ github.action_path }}/manifests/astarte/" "${{ inputs.astartectl_version }}"
     - name: Create Realm Keys
       if: ${{ inputs.astarte_realm != '' }}
       shell: bash
