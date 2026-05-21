@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- Add the `kustomize_astarte_patch` input to patch the Astarte resource before it's applied
+- Add the `*.api.autotest.astarte-platform.org` wildcard host to the test certificate
+
 ## [2.0.0] - 2026-05-07
 - Bump to latest stable versions for Astarte, Astarte Operator, astartectl.
 
